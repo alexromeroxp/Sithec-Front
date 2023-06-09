@@ -1,0 +1,10 @@
+.two-column-list {
+    column-count: 2;
+    column-gap: 20px; 
+  }
+
+  .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }

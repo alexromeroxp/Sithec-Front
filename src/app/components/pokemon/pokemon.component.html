@@ -1,0 +1,78 @@
+<p-button label="Open favorites" type="button" styleClass="p-button-text" icon="pi pi-star-fill" (onClick)="showDialogFavorite=true; " *ngIf="favorites && favorites.length">
+</p-button>
+<p-table [value]="pokemons?.results" [paginator]="true" [rows]="10" (onRowSelect)="onRowSelect($event)"
+    [showCurrentPageReport]="true" selectionMode="single" [tableStyle]="{ 'min-width': '50rem' }"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [rowsPerPageOptions]="[10, 25, 50]">
+    <ng-template pTemplate="header">
+        <tr>
+            <th style="width:25%">Name</th>
+            <th style="width:25%">Url</th>
+            <th style="width:25%">Favorite status</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-pokemon>
+        <tr [pSelectableRow]="pokemon">
+            <td>{{ pokemon.name }}</td>
+            <td>{{ pokemon.url }}</td>
+            <td>
+                <p-button (onClick)="addToFavorites(pokemon)" *ngIf="!pokemon.favorite" type="button"
+                    styleClass="p-button-text" icon="pi pi-star">
+                </p-button>
+                <p-button (onClick)="deleteFavorite(pokemon)" *ngIf="pokemon.favorite" type="button"
+                    styleClass="p-button-text" icon="pi pi-star-fill">
+                </p-button>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="paginatorleft">
+        <p-button *ngIf="pokemons && pokemons.previous!=null" label="Load previous" type="button" icon="pi pi-minus"
+            styleClass="p-button-text" (onClick)="loadPreviousOrNextPokemons(pokemons.previous)"></p-button>
+    </ng-template>
+    <ng-template pTemplate="paginatorright">
+        <p-button *ngIf="pokemons && pokemons.next!=null" label="Load Next" type="button" icon="pi pi-plus"
+            styleClass="p-button-text" (onClick)="loadPreviousOrNextPokemons(pokemons.next)"></p-button>
+    </ng-template>
+</p-table>
+<div>
+    <p-dialog *ngIf="pokemon" [(visible)]="showDialog" [style]="{width: '40vw'}">
+        <h1 class="mb-1">Pokemon: {{ pokemon.name }}</h1>
+        <h4 class="mb-1">Images:</h4>
+        <p-carousel [value]="pokemon.images" [numVisible]="2" [numScroll]="1" verticalViewPortHeight="250px"
+            horizontalViewPortHeight="250px" [circular]="false" [responsiveOptions]="responsiveOptions">
+            <ng-template let-pokemon pTemplate="item">
+                <div class="border-1 surface-border border-round text-center py-5 ">
+                    <div class="mb-3 center">
+                        <p-image [src]="pokemon" alt="Image" width="200"></p-image>
+                    </div>
+                </div>
+            </ng-template>
+        </p-carousel>
+        <h4 class="mb-2">Abilites:</h4>
+        <ul class="two-column-list">
+            <li *ngFor="let item of pokemon.abilities">{{ item.ability.name }}</li>
+        </ul>
+        <h4 class="mb-2">Games:</h4>
+        <ul class="two-column-list">
+            <li *ngFor="let item of pokemon.game_indices">{{ item.version.name }}</li>
+        </ul>
+        <h4 class="mb-2">Types:</h4>
+        <ul class="two-column-list">
+            <li *ngFor="let item of pokemon.types">{{ item.type.name }}</li>
+        </ul>
+    </p-dialog>
+</div>
+<p-dialog *ngIf="favorites" [(visible)]="showDialogFavorite" [style]="{width: '30vw'}">
+    <h2 class="mb-1">Favorites:</h2>
+    <p-scroller 
+        [items]="getFavorites()" 
+        [itemSize]="50" 
+        scrollHeight="500px" 
+        styleClass="border-1 surface-border"
+        [style]="{'width': '200px', 'height': '200px'}">
+        <ng-template pTemplate="item" let-item let-options="options">
+            <div class="flex align-items-center p-2" [ngClass]="{ 'surface-ground': options.odd }"
+                style="height: 50px;">{{ item }}</div>
+        </ng-template>
+    </p-scroller>
+</p-dialog>
+
